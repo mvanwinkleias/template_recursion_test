@@ -1,0 +1,81 @@
+SPEC_FILE_NAME = $(ARTIFACT_NAME)-$(RELEASE_VERSION)--pkginfo.spec
+SPEC_FILE = $(BUILD_DIR)/$(SPEC_FILE_NAME)
+
+.PHONY: \
+	package-rpm \
+	rpmspec \
+	cp-rpmspec \
+	rpmbuild
+
+package-rpm: clean all install rpmspec rpmbuild
+
+rpmspec: install
+	echo "" > $(SPEC_FILE)
+	echo "Name: $(ARTIFACT_NAME)" >> $(SPEC_FILE)
+	echo "Version: $(SRC_VERSION)" >> $(SPEC_FILE)
+	echo "Release: $(PKG_VERSION)" >> $(SPEC_FILE)
+	echo "BuildArch: $(ARCH)" >> $(SPEC_FILE)
+	echo `svn info |grep '^URL:'` >> $(SPEC_FILE)
+	echo "Packager: $$USER" >> $(SPEC_FILE)
+	
+	# cat ./$(ARTIFACT_NAME)/pkginfo >> $(SPEC_FILE)
+	cat ./$(ARTIFACT_NAME)/rpm_specific >> $(SPEC_FILE)
+	for file in $(ARTIFACT_NAME)/install_scripts/*; do echo "%"`basename $$file` >> $(SPEC_FILE); cat $$file >> $(SPEC_FILE); done
+	echo "%description" >> $(SPEC_FILE)
+	cat ./$(ARTIFACT_NAME)/description >> $(SPEC_FILE)
+	echo "" >> $(SPEC_FILE)
+
+	echo "%files" >> $(SPEC_FILE)
+	# This one command tells rpmbuild to use the file system parameters
+	echo "%defattr(-, -, -, -)" >> $(SPEC_FILE)
+
+	echo "$(DOC_DIR)" >> $(SPEC_FILE)
+	echo "$(INPUT_DIR)" >> $(SPEC_FILE)
+	echo "$(OUTPUT_DIR)" >> $(SPEC_FILE)
+	echo "$(LOG_DIR)" >> $(SPEC_FILE)
+
+# Binaries
+ifneq ("$(wildcard $(SRC_DIR)/bin/*)","")
+	echo "$(BIN_DIR)" >> $(SPEC_FILE)
+endif
+
+# cgi-bin
+ifneq ("$(wildcard $(SRC_DIR)/cgi-bin/*)","")
+	echo "$(CGI_BIN_DIR)" >> $(SPEC_FILE)
+endif
+
+# Templates
+ifneq ("$(wildcard $(SRC_DIR)/templates/*)","")	
+	echo "$(TEMPLATE_DIR)" >> $(SPEC_FILE)
+endif
+
+# Libraries
+ifneq ("$(wildcard $(SRC_DIR)/lib/*)","")
+	echo "$(LIB_DIR)" >> $(SPEC_FILE)
+endif
+
+# Project Config, example /opt/IAS/etc/(project-name)
+ifneq ("$(wildcard $(SRC_DIR)/etc/*)","")
+	echo "%dir $(CONF_DIR)" >> $(SPEC_FILE)
+	-find $(ROOT_DIR)/$(CONF_DIR) -type f | sed -r "s|$(ROOT_DIR)|%config |"  >> $(SPEC_FILE)
+endif
+
+ifneq ("$(wildcard $(SRC_DIR)/root_etc/*)","")
+	# /etc/ config files
+	-find $(ROOT_DIR)/etc -type f |  sed -r "s|$(ROOT_DIR)|%config(noreplace) |" >> $(SPEC_FILE)
+endif
+
+
+cp-rpmspec: builddir
+	cp $(ARTIFACT_NAME)/$(SPEC_FILE_NAME) $(SPEC_FILE)
+
+rpmbuild:
+	rpmbuild --buildroot $(ROOT_DIR) -bb $(SPEC_FILE) --define '_topdir $(BUILD_DIR)' --define '_rpmtopdir $(BUILD_DIR)'
+	
+
+.PHONY: debug-package_build-rpm
+
+debug-package_build-rpm:
+	# package_build-rpm - debug variables
+	#  SPEC_FILE_NAME: '$(SPEC_FILE_NAME)'
+	#  SPEC_FILE: '$(SPEC_FILE)'

@@ -1,0 +1,11 @@
+build
+drop/*
+
+src/input/*
+src/output/*
+drop/*
+src/log/*
+
+*.swp
+__pycache__/
+*.pyc

@@ -1,0 +1,21 @@
+.PHONY: all clean builddir install
+
+all:
+
+clean:
+	-rm -rf $(BUILD_DIR)
+
+builddir:
+	if [ ! -d $(BUILD_DIR) ]; then mkdir $(BUILD_DIR); fi;
+
+install: \
+	builddir \
+	package_install-base_directories \
+	package_install-conditional_additions \
+	package_install-final_cleanup
+
+.PHONY: debug-make-standard_phonies
+
+debug-make-standard_phonies:
+	# make-standard_phonies - debug variables
+	#   (no variables defined)

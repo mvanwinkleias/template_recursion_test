@@ -1,0 +1,5 @@
+# Set to 1 to enable useful permission settings
+USE_AUTOMATION_PERMISSIONS = 0
+AUTOMATION_USER = iasnetauto
+AUTOMATION_GROUP = iasnetauto
+

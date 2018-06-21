@@ -1,0 +1,77 @@
+.PHONY: package_install-conditional_additions
+
+# Conditional additions
+
+package_install-conditional_additions: package_install-base_directories
+
+ifneq ("$(wildcard $(SRC_DIR)/run_scripts/*)","")
+	# Installing run scripts
+	cp -r $(SRC_DIR)/run_scripts $(DOC_INST_DIR)/run_scripts
+	find $(DOC_INST_DIR)/run_scripts -type d -exec chmod 755 {} \;
+	find $(DOC_INST_DIR)/run_scripts -type f -exec chmod 755 {} \;
+	
+endif
+
+ifneq ("$(wildcard $(PROJECT_DIR)/doc/*)","") 
+	# Installing more documentation
+	mkdir -p $(DOC_INST_DIR)
+	cp -r $(PROJECT_DIR)/doc $(DOC_INST_DIR)/doc
+	find $(DOC_INST_DIR) -type d -exec chmod 755 {} \;
+	find $(DOC_INST_DIR) -type f -exec chmod 644 {} \;
+endif
+
+ifneq ("$(wildcard $(SRC_DIR)/bin/*)","") 
+	# Installing binaries.
+	mkdir -p $(ROOT_DIR)/$(BIN_DIR)
+	cp -r $(SRC_DIR)/bin/* $(ROOT_DIR)/$(BIN_DIR)
+	find $(BIN_INST_DIR) -type d -exec chmod 755 {} \;
+	find $(BIN_INST_DIR) -type f -exec chmod 755 {} \;
+
+endif
+
+ifneq ("$(wildcard $(SRC_DIR)/cgi-bin/*)","") 
+	# Installing CGI-BIN files
+	mkdir -p $(ROOT_DIR)/$(CGI_BIN_DIR)
+	-cp -r $(SRC_DIR)/cgi-bin/* $(ROOT_DIR)/$(CGI_BIN_DIR)
+	-find $(CGI_BIN_INST_DIR) -type d -exec chmod 755 {} \;
+	-find $(CGI_BIN_INST_DIR) -type f -exec chmod 755 {} \;
+endif
+	
+ifneq ("$(wildcard $(SRC_DIR)/templates/*)","") 
+	# Installing Templates
+	mkdir -p $(TEMPLATE_INST_DIR)
+	cp -r $(SRC_DIR)/templates $(TEMPLATE_INST_DIR)
+	find $(TEMPLATE_INST_DIR) -type d -exec chmod 755 {} \;
+	find $(TEMPLATE_INST_DIR) -type f -exec chmod 644 {} \;
+endif
+
+# lib
+ifneq ("$(wildcard $(SRC_DIR)/lib/*)","")	
+	# Installing libraries
+	mkdir -p $(LIB_INST_DIR)
+	cp -r $(SRC_DIR)/lib/* $(LIB_INST_DIR)
+	find $(LIB_INST_DIR) -type d -exec chmod 755 {} \;
+	find $(LIB_INST_DIR) -type f -exec chmod 644 {} \;
+	
+endif
+
+ifneq ("$(wildcard $(SRC_DIR)/etc/*)","")
+	# Installing project directory configuration
+	mkdir -p $(ROOT_DIR)/$(CONF_DIR)
+	cp -r $(SRC_DIR)/etc/* $(ROOT_DIR)/$(CONF_DIR)/
+	find $(ROOT_DIR)/$(CONF_DIR)/ -type d -exec chmod 755 {} \;
+	find $(ROOT_DIR)/$(CONF_DIR)/ -type f -exec chmod 644 {} \;
+endif
+
+ifneq ("$(wildcard $(SRC_DIR)/root_etc/*)","")
+	# Installing things to /etc
+	cp -r $(SRC_DIR)/root_etc $(ROOT_DIR)/etc
+	find $(ROOT_DIR)/etc -type d -exec chmod 755 {} \;
+	find $(ROOT_DIR)/etc -type f -exec chmod 644 {} \;
+endif
+
+.PHONY: debug-package_install-conditional_additions
+
+debug-package_install-conditional_additions:
+	# package_install-conditional_additions - debug variables
+	#   (no variables defined)
