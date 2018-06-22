@@ -223,6 +223,10 @@ sub process_project_dir
 			$!
 		);
 
+	debug("Running template routines with data:",$/);
+	debug(Dumper($project_info,$/));
+
+
 	finddepth(
 		{
 			wanted => sub { rename_path_template($_, $project_info); },
@@ -237,7 +241,9 @@ sub process_project_dir
 		{
 			no_chdir => 1, 
 			wanted => sub {
-				process_file_template($_, $project_info)
+				my $file = $_;
+				# print "Processing: $file\n";
+				process_file_template($file, $project_info)
 			},
 		},
 		$OPTIONS_VALUES->{'dest-path'}
@@ -266,9 +272,7 @@ sub process_file_template
 	write_template_file(
 		$temp_file_name, 
 		$source_file_name,
-		{
-			project => $project_info,
-		}
+		$project_info,
 	);
 	copy($temp_file_name, $source_file_name);
 	unlink($temp_file_name);
