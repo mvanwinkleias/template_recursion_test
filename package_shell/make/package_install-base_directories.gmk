@@ -8,7 +8,8 @@ package_install-base_directories:
 	chmod -R 755 "$(ROOT_DIR)"
 	
 	mkdir -p "$(DOC_INST_DIR)"
-	chmod 775 "$(DOC_BASE_DIR)"
+	chmod 775 "$(ROOT_DIR)/$(DOC_BASE_DIR)"
+	
 	cp "$(ARTIFACT_NAME)/changelog" "$(DOC_INST_DIR)/"
 	cp "$(ARTIFACT_NAME)/description" "$(DOC_INST_DIR)/"
 	cp README* "$(DOC_INST_DIR)"
@@ -21,15 +22,15 @@ package_install-base_directories:
 
 	mkdir -p "$(ROOT_DIR)/$(INPUT_DIR)"
 	chmod 755 "$(ROOT_DIR)/$(INPUT_DIR)"
-	chmod 755 "$(INPUT_BASE_DIR)"
+	chmod 755 "$(ROOT_DIR)/$(INPUT_BASE_DIR)"
 	
 	mkdir -p "$(ROOT_DIR)/$(OUTPUT_DIR)"
 	chmod 755 "$(ROOT_DIR)/$(OUTPUT_DIR)"
-	chmod 755 "$(OUTPUT_BASE_DIR)"
+	chmod 755 "$(ROOT_DIR)/$(OUTPUT_BASE_DIR)"
 	
 	mkdir -p "$(ROOT_DIR)/$(LOG_DIR)"
 	chmod 755 "$(ROOT_DIR)/$(LOG_DIR)"
-	chmod 755 "$(LOG_BASE_DIR)"
+	chmod 755 "$(ROOT_DIR)/$(LOG_BASE_DIR)"
 
 .PHONY: debug-package_install-base_directories
 
